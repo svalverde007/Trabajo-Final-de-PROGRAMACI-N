@@ -1,0 +1,207 @@
+ MINIESPECIFICACIÓN: SISTEMA DE BIENESTAR DIGITAL
+Inicio
+    función principal()
+        
+        dias[7] x ← obtenerDias()
+        momentos[3] x ← obtenerMomentos()
+        limites[3] d, [0-n] ← configurarLimites(momentos)
+		
+        registro[3][7] d, [0-n] ← capturarUso(dias, momentos, limites)
+        diagnostico[3][7] x ← evaluar(registro, limites)
+		
+        totalesPorDia[7] d, [0-n] ← calcularTotales(registro)
+        
+        limiteTotalDiario d, [0-n] ← calcularLimiteTotal(limites)
+        diferenciasDiarias[7] d, [0-n] ← calcularDiferencias(totalesPorDia, limiteTotalDiario)
+		
+        promediosMomento[3] d, [0-n] ← calcularPromedios(registro)
+        
+        generarReporte(registro, diagnostico, totalesPorDia, promediosMomento, dias, momentos, diferenciasDiarias)
+    fin función principal
+	
+	función obtenerDias(): x [7]
+		retornar {"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"}
+	fin función obtenerDias
+
+	función obtenerMomentos(): x [3]
+		retornar {"Mañana", "Tarde", "Noche"}
+	fin función obtenerMomentos
+
+	función configurarLimites(momentos[3] x): d [3]
+		limites[3] d, [0-n] 
+		suma d, [0-n] ← 0
+		i i, [0-n]
+		Escribir "--- CONFIGURACIÓN DE METAS DIARIAS ---"
+		Para (i ← 0, i < 3, 1) haga
+			limites[i] ← leerLimiteDiario(momentos[i])
+			suma ← suma + limites[i]
+		Fin Para
+		Escribir "El límite diario es: ", suma
+		retornar limites
+	fin función configurarLimites
+	
+	función leerLimiteDiario(m x): d
+		h d, [0-n]
+		Haga hasta
+			Escribir "Ingrese el limite de horas para la " + m + ":"
+			Leer h
+			Si (h <= 0) entonces 
+				Escribir ">> Error: Debe ser mayor a 0."
+			FinSi
+		Hasta que (h > 0)
+		retornar h
+	fin función leerLimiteDiario
+
+	función capturarUso(dias[7] x, momentos[3] x, limites[3] d): d [3][7]
+		matriz[3][7] d, [0-n]
+		i i, [0-n] 
+		j i, [0-n]
+		Para (j ← 0, j < 7, 1) haga
+			Escribir "--- REGISTRO: ", dias[j], " ---"
+			Para (i ← 0, i < 3, 1) haga
+				matriz[i][j] ← leerHoraValida(momentos[i])
+				mensajeAlerta(matriz[i][j], limites[i], momentos[i])
+			Fin Para
+		Fin Para
+		retornar matriz
+	fin función capturarUso
+
+	función leerHoraValida(m x): d
+		h d, [0-n]
+		Haga hasta
+			Escribir "Ingrese las horas de uso para la " + m + ":"
+			Leer h
+			Si (h <= 0) entonces 
+				Escribir ">> Error: Debe ser mayor a 0."
+			FinSi
+		Hasta que (h > 0)
+		retornar h
+	fin función leerHoraValida
+
+	función mensajeAlerta(hora d, limite d, momento x)
+		Si (hora > limite) entonces
+			Escribir "¡¡ALERTA!!: Superaste el límite de la ", momento
+			Según (momento) haga
+				Caso "Mañana": Escribir 
+					"Consejo: Prioriza tu hidratación y desayuno antes que las notificaciones."
+				Caso "Tarde":  
+					Escribir "Consejo: Establece un bloque de 'Trabajo Profundo' de 60 minutos."
+				Caso "Noche":  
+					Escribir "Consejo: Evita la luz azul antes de dormir."
+			Fin Según
+		De lo contrario
+			Escribir "¡Muy bien! Respetaste el límite de la ", momento
+		Fin Si
+		Escribir "------------------------------------"
+	fin función mensajeAlerta
+
+	función evaluar(reg[3][7] d, lim[3] d): x [3][7]
+		estado[3][7] x, 
+		i, j i, [0-n]
+		Para (j ← 0, j < 7, 1) haga
+			Para (i ← 0, i < 3, 1) haga
+				Si (reg[i][j] <= lim[i]) entonces estado[i][j] ← "Cumplió"
+            De lo contrario
+				estado[i][j] ← "No cumplió"
+			Fin Para
+		Fin Para
+		retornar estado
+	fin función evaluar
+
+	función calcularTotales(reg[3][7] d): d [7]
+		totales[7] d, [0-n]
+		i, j i, [0-n]
+		Para (j ← 0, j < 7, 1) haga
+			Para (i ← 0, i < 3, 1) haga
+				totales[j] ← totales[j] + reg[i][j]
+			Fin Para
+		Fin Para
+		retornar totales
+	fin función calcularTotales
+	
+	función calcularLimiteTotal(limites[] d): d
+		suma d, [0-n] ← 0
+		i, [0-n]
+		Para (i ← 0, i < 3, 1) haga
+			suma ← suma + limites[i]
+		Fin Para
+		retornar suma
+	fin función calcularLimiteTotal
+	
+	funcion calcularDiferencias(totalDia d[], limiteDiario d): d[]
+        diferencia d[], [0-n]
+        Para (i ← 0, i < 7, 1) haga
+            diferencia[j] = totalDia[j] - limiteDiario;
+        Fin Para
+        return diferencia;
+    fin funcion calcularDiferencias
+    
+
+	función calcularPromedios(reg[3][7] d): d [3]
+		prom[3] d, [0-n]
+		i, j i, [0-n]
+		Para (i ← 0, i < 3, 1) haga
+			suma d ← 0
+			Para (j ← 0, j < 7, 1) haga
+				suma ← suma + reg[i][j]
+			Fin Para
+			prom[i] ← suma / 7
+		Fin Para
+		retornar prom
+	fin función calcularPromedios
+	
+	funcion contarResultados(): i[]
+		conteo i, [0-n]
+		Para (j ← 0, j < 7, 1) haga
+			Para (i ← 0, i < 3, 1) haga
+				Si (status[i][j] == "Cumplió") entonces
+					conteo[0] ← conteo[0] + 1 
+				De lo contrario
+					conteo[1] ← conteo[1] + 1
+				Fin Si
+			Fin Para
+		Fin Para
+	fin funcion contarResultados
+
+	función generarReporte(registro[3][7] d, estado[3][7] x, totales[7] d, promedios[3] d, dias[7] x, momentos[3] x, dif[7] d)    
+		reporte x ← ""
+		i, j, [0-n]
+		resultados[2] i, [0-n]
+		reporte ← reporte + "\n============ REPORTE SEMANAL DE BIENESTAR DIGITAL ============\n"		
+		Para (j ← 0, j < 7, 1) haga
+			reporte ← reporte + "DÍA: " + dias[j] + "\n"
+        
+			Para (i ← 0, i < 3, 1) haga
+				reporte ← reporte + "  > " + momentos[i] + ": " + registro[i][j] + " hrs. [" + estado[i][j] + "]\n"
+			Fin Para
+        
+			reporte ← reporte + "TOTAL DEL DÍA: " + totales[j] + " hrs.\n"
+        
+			Si (dif[j] > 0) entonces
+				reporte ← reporte + "RESULTADO: Fallaste por " + dif[j] + " hrs.\n"
+			Sino
+				// Se usa valor absoluto para mostrar la diferencia positiva
+				reporte ← reporte + "RESULTADO: ¡Excelente! Te sobraron " + |dif[j]| + " hrs.\n"
+			Fin Si
+        
+			reporte ← reporte + "---------------------------------------------------------\n"
+		Fin Para
+
+		reporte ← reporte + "============ RESUMEN DE HÁBITOS (PROMEDIOS) ============\n"
+    
+		
+		Para (i ← 0, i < 3, 1) haga
+			reporte ← reporte + "Promedio en la " + momentos[i] + ": " + Formatear(promedios[i], 2) + " hrs.\n"
+		Fin Para
+    
+		
+		resultados ← contarResultados(estado)
+    
+		reporte ← reporte + "============ METAS DE LA SEMANA ============\n"
+		reporte ← reporte + "CUMPLIDAS: " + resultados[0] + "\n"
+		reporte ← reporte + "FALLIDAS: " + resultados[1] + "\n"
+
+		
+		Escribir reporte
+	fin función generarReporte
+Fin
